@@ -34,5 +34,6 @@
 
 .vs/
 Release/
+build/
 
 
