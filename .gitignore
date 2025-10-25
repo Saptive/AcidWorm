@@ -37,3 +37,19 @@ Release/
 build/
 
 
+/AcidWorm/x64/Debug/
+/AcidWorm/x64/Debug/AcidWorm.tlog/CL.command.1.tlog
+/AcidWorm/x64/Debug/AcidWorm.tlog/Cl.items.tlog
+/AcidWorm/x64/Debug/AcidWorm.tlog/CL.read.1.tlog
+/AcidWorm/x64/Debug/AcidWorm.tlog/CL.write.1.tlog
+/AcidWorm/x64/Debug/AcidWorm.tlog/link.command.1.tlog
+/AcidWorm/x64/Debug/AcidWorm.tlog/link.read.1.tlog
+/AcidWorm/x64/Debug/AcidWorm.tlog/link.secondary.1.tlog
+/AcidWorm/x64/Debug/AcidWorm.tlog/link.write.1.tlog
+/AcidWorm/x64/Debug/AcidWorm.exe.recipe
+/AcidWorm/x64/Debug/AcidWorm.ilk
+/AcidWorm/x64/Debug/AcidWorm.log
+/AcidWorm/x64/Debug/vc143.idb
+/AcidWorm/x64/Debug/vc143.pdb
+/x64/
+/comms.pcap
