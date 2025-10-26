@@ -53,3 +53,7 @@ build/
 /AcidWorm/x64/Debug/vc143.pdb
 /x64/
 /comms.pcap
+/AcidWorm/Debug/
+/AcidWorm/Debug/AcidWorm.log
+/AcidWorm/Debug/AcidWorm.vcxproj.FileListAbsolute.txt
+/build/

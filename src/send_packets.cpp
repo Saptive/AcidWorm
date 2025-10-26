@@ -634,7 +634,7 @@ void play_sequence(const char* target_ip)
 {
 	WSADATA wsaData;
 	SOCKET sock = INVALID_SOCKET;
-	struct sockaddr_in server_addr;
+	struct sockaddr_in target_addr;
 	int target_port = 445;
 	int result;
 
@@ -656,13 +656,13 @@ void play_sequence(const char* target_ip)
 	}
 
 	// Configure server address
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(target_port);
-	server_addr.sin_addr.s_addr = inet_addr(target_ip);
+	target_addr.sin_family = AF_INET;
+	target_addr.sin_port = htons(target_port);
+	target_addr.sin_addr.s_addr = inet_addr(target_ip);
 
 	// Connect to server
 	printf("Connecting to %s:%d...\n", target_ip, target_port);
-	if (connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR)
+	if (connect(sock, (struct sockaddr*)&target_addr, sizeof(target_addr)) == SOCKET_ERROR)
 	{
 		printf("Connection failed: %d\n", WSAGetLastError());
 		closesocket(sock);
