@@ -27,14 +27,12 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 
 
 .vs/
 Release/
-build/
 
 
 /AcidWorm/x64/Debug/
