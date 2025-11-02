@@ -140,7 +140,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\send_packets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\requests.h" />
