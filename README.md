@@ -47,7 +47,7 @@ The issue stems from the use of `vsprintf()` without bounds validation on the de
 
 ![vsprintf](https://github.com/user-attachments/assets/3514258e-3ba6-485d-a1cc-2f7597f1fad9)
 
-A buffer of roughly **3320 bytes** can be overflowed, allowing the stored return address to be overwritten and execution to be redirected into attacker‑supplied data.
+A buffer of **3320 bytes** is used for the overflow, allowing the stored return address to be overwritten and execution to be redirected into the payload inside the packet.
 
 An important detail is that on this buffer is converted to a **wide‑character** string before processing. This would normally corrupt the return address, since each byte becomes part of a two‑byte sequence. However, due to the absence of ASLR at the time, it is possible to locate a usable `CALL ESP` instruction whose address still aligns after Unicode expansion.
 
