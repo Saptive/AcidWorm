@@ -1,6 +1,6 @@
 # AcidWorm
 
-**AcidWorm** is a NetWorm malware inspired by the 2004 **Sasser** worm.
+**AcidWorm** is a NetWorm malware inspired by the 2004 **Sasser** worm. It is the second member of the Acid malware family, second to **AcidRain**.
 This project was developed purely for fun, aiming to improve my reverse engineering and exploit development skills along with my understanding of windows internals.
 
 ## Description
@@ -71,7 +71,8 @@ This payload then launches the bindshell and sets the stage for remote propagati
 
 ## Showcase video
 
-![showcase vid](https://github.com/user-attachments/assets/6b429336-dea1-4c28-8f94-73e7f4f902fc)
+
+https://github.com/user-attachments/assets/27754144-6872-4be1-82d8-4e5b5cab1460
 
 
 ## Legal Disclaimer
