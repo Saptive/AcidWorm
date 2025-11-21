@@ -69,10 +69,15 @@ This code jumps to code snippet that decrypts the payload itself, as it is XOR e
 This payload then launches the bindshell and sets the stage for remote propagation and payload delivery.
 
 
+
 ## Showcase video
 
 
 https://github.com/user-attachments/assets/27754144-6872-4be1-82d8-4e5b5cab1460
+
+
+
+https://github.com/user-attachments/assets/fec05f4e-d4ef-405b-ac50-b206ee48b2ba
 
 
 ## Legal Disclaimer
