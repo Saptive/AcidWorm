@@ -34,6 +34,7 @@
 .vs/
 Release/
 
+build/
 
 /AcidWorm/x64/Debug/
 /AcidWorm/x64/Debug/AcidWorm.tlog/CL.command.1.tlog
@@ -54,4 +55,4 @@ Release/
 /AcidWorm/Debug/
 /AcidWorm/Debug/AcidWorm.log
 /AcidWorm/Debug/AcidWorm.vcxproj.FileListAbsolute.txt
-/build/
+
