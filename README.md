@@ -8,7 +8,7 @@ AcidWorm’s infection process is based on the MS04‑011 `DsRolerUpgradeDownlev
 The propagation flow proceeds as follows:
 
 - The LSASS RPC buffer overflow is triggered, overwriting the return address and redirecting execution into shellcode placed within the incoming packet.
-- The injected shellcode launches a bindshell on TCP port **2421**, running with full `SYSTEM` privileges.
+- The injected shellcode launches a bindshell on TCP port **2421**, running with `SYSTEM` privileges.
 - The worm then connects back to this remote shell and uploads a small `.ftp` script to the victim machine.
 - This script is written to disk and executed, initiating retrieval of the main executable payload via a minimal FTP-like data transfer mechanism.
 - After download is complete, the retrieved executable is launched through the same remote shell, allowing the worm to repeat the process on additional hosts.
@@ -49,7 +49,7 @@ The issue stems from the use of `vsprintf()` without bounds validation on the de
 
 A buffer of **3320 bytes** is used for the overflow, allowing the stored return address to be overwritten and execution to be redirected into the payload inside the packet.
 
-An important detail is that on this buffer is converted to a **wide‑character** string before processing. This would normally corrupt the return address, since each byte becomes part of a two‑byte sequence. However, due to the absence of ASLR at the time, it is possible to locate a usable `CALL ESP` instruction whose address still aligns after Unicode expansion.
+An important detail is that this buffer is converted to a **wide‑character** string before processing. This would normally corrupt the return address, since each byte becomes part of a two‑byte sequence. However, due to the absence of ASLR at the time, it is possible to locate a usable `CALL ESP` instruction whose address still aligns after Unicode expansion.
 
 ![multi-byte to whcar](https://github.com/user-attachments/assets/591b5dec-5440-409f-9db3-59494aacdde4)
 
