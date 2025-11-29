@@ -62,7 +62,7 @@ The overwritten return address redirects execution to a `CALL ESP`, which points
 
 ![jmp to decryptor](https://github.com/user-attachments/assets/96de8c53-6d01-40e0-9c9c-eb4548f5a441)
 
-This code jumps to code snippet that decrypts the payload itself, as it is XOR encrypted. After it's done, it jumps to the beginning of the decrypted shellcode block.
+This code jumps to the code snippet that decrypts the payload itself, as it is XOR encrypted. After it's done, it jumps to the beginning of the decrypted shellcode block.
 
 ![payload decrypt and payload](https://github.com/user-attachments/assets/d4ea8c86-d71b-4640-989b-5919241b7d85)
 
